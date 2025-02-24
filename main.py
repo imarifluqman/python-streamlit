@@ -1,10 +1,12 @@
 import streamlit as st
 import requests
 
+
+st.set_page_config(page_title="Home", page_icon="🏠")
+
 API_URL = "https://fakestoreapi.com/products"
 
 # Function to fetch products
-@st.cache_data
 def fetch_products():
     response = requests.get(API_URL)
     if response.status_code == 200:
@@ -32,7 +34,7 @@ products = fetch_products()
 st.title("🛒 E-Commerce Store")
 
 # Tabs for Products & Cart
-tab1, tab2 = st.tabs(["🛍️ Products", "🛒 Cart"])
+tab1, tab2 = st.tabs(["🛍️ Products", f"🛒 Cart {len(st.session_state.cart) if st.session_state.cart else ''}" ])
 
 # Products Page
 with tab1:
@@ -42,16 +44,17 @@ with tab1:
     # Display products
     for index, product in enumerate(products):
         with cols[index % 4]:
-            st.image(product["image"], width=250)
-            st.write(f"**{product['title']}**")
-            st.write(f"💲 {product['price']}")
-            if st.button("Add to Cart", key=f"add_{product['id']}"):
-                add_to_cart(product)
-                st.rerun()
-       
-       
+            with st.container(border=True,):
+                st.image(product["image"], width=250)
+                st.write(f"**{product['title']}**")
+                st.write(f"💲 {product['price']}")
+                if st.button("Add to Cart", key=f"add_{product['id']}"):
+                    add_to_cart(product)
+                    st.rerun()
                 
                 
+    
+    
 name, phone, address, order_placed = "", "", "", False
 # Cart Page
 with tab2:
@@ -87,6 +90,3 @@ with tab2:
     else:
         st.write("🛒 Your cart is empty!")
  
-
-   
-            
